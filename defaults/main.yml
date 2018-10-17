@@ -1,0 +1,91 @@
+---
+metricbeat_major_version: 6.x
+metricbeat_minor_version: 6.0.1
+metricbeat_repo_url: https://artifacts.elastic.co
+metricbeat_repo_key: "{{ metricbeat_repo_url }}/GPG-KEY-elasticsearch"
+metricbeat_config_dir: /etc/metricbeat
+metricbeat_log_dir: /var/log/metricbeat
+
+# Modules enabled by default for Metricbeat
+metricbeat_enabled_modules:
+  - module: system
+    metricsets: ["cpu", "load", "core", "diskio", "filesystem", "fsstat", "memory", "network", "process", "socket" ]
+    enabled: true
+    period: 10s
+    processes: ['.*']
+
+  - module: windows
+    metricsets: ["service","perform"]
+    perfmon.ignore_non_existent_counters: true
+    enabled: true
+    period: 60s
+
+  - module: docker
+    metricsets: ["container", "cpu", "diskio", "healthcheck", "info", "memory", "network"]
+    hosts: ["unix:///var/run/docker.sock"]
+    enabled: true
+    period: 10s
+
+  - module: kubernetes
+    enabled: true
+    metricsets:
+      - apiserver
+      - event
+    hosts: ["https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}"]
+
+  - module: nginx
+    metricsets: ["stubstatus"]
+    enabled: true
+    period: 10s
+    hosts: ["http://127.0.0.1"]
+    server_status_path: "server-status"
+
+  - module: php_fpm
+    metricsets: ["pool"]
+    enabled: true
+    period: 10s
+    status_path: "/status"
+    hosts: ["localhost:8080"]
+
+  - module: mysql
+    metricsets: ["status"]
+    enabled: true
+    period: 10s
+    hosts: ["root:secret@tcp(127.0.0.1:3306)/"]
+    username: root
+    password: secret
+    raw: false
+
+  - module: postgresql
+    metricsets: ["database", "bgwriter", "activity"]
+    enabled: true
+    period: 10s
+    hosts: ["postgres://localhost:5432"]
+    username: root
+    password: secret
+  - module: etcd
+    metricsets: ["leader", "self", "store"]
+    period: 10s
+    hosts: ["localhost:2379"]
+
+  - module: vsphere
+    enabled: true
+    metricsets: ["datastore", "host", "virtualmachine"]
+    period: 10s
+    hosts: ["https://localhost/sdk"]
+    username: "user"
+    password: "password"
+    insecure: false
+
+  - module: logstash
+    metricsets: ["node", "node_stats"]
+    enabled: true
+    period: 10s
+    hosts: ["localhost:9600"]
+
+  - module: kibana
+    metricsets: ["status"]
+    period: 10s
+    hosts: ["localhost:5601"]
+    basepath: ""
+    enabled: true

@@ -1,0 +1,17 @@
+---
+- include_tasks: setup-Debian.yml
+  when: ansible_os_family == "Debian"
+
+- include_tasks: setup-RedHat.yml
+  when: ansible_os_family == "RedHat"
+
+- name: config | Configuring Metricbeat
+  template:
+    src: metricbeat.yml.j2
+    dest: "{{ metricbeat_config_dir }}/metricbeat.yml"
+  notify: restart metricbeat
+
+- name: service | Ensuring Metricbeat Service Is Enabled and Starts On Boot
+  service:
+    name: metricbeat
+    enabled: true

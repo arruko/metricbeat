@@ -1,0 +1,27 @@
+---
+galaxy_info:
+  author: Jimmy H
+  description: A role that installs Metricbeat on Ansible inventories
+  company: "Arrukö"
+  license: MIT
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Ubuntu
+      versions:
+        - xenial
+        - trusty
+    - name: Debian
+      versions:
+      - all
+  galaxy_tags:
+    - monitoring
+    - logging
+    - kibana
+    - grok
+    - filter
+    - logs
+    - metricbeat

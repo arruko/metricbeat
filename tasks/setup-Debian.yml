@@ -1,0 +1,24 @@
+---
+- name: Debian | Update apt cache
+  apt:
+    update_cache: yes
+
+- name: Debian | Installing requirements
+  apt:
+    name: apt-transport-https
+    state: present
+
+- name: Debian | Adding Elastic Repo Key
+  apt_key:
+    url: "{{ metricbeat_repo_key }}"
+    state: present
+
+- name: Debian | Adding Elastic Metricbeat Repo
+  apt_repository:
+    repo: "deb {{ metricbeat_repo_url }}/packages/{{ metricbeat_major_version }}/apt stable main"
+    state: present
+
+- name: Debian | Installing Elastic Metricbeat {{ metricbeat_minor_version }}
+  apt:
+    name: "metricbeat={{ metricbeat_minor_version }}"
+    state: present
