@@ -22,25 +22,26 @@ metricbeat.config.modules:
   # Set to true to enable config reloading
   reload.enabled: false
 
-  metricbeat.modules: {{ metricbeat_enabled_modules }}
+metricbeat.modules: 
+{{ metricbeat_enabled_modules | to_yaml | mandatory }}
 
 #================================ General ======================================
 
 # The name of the shipper that publishes the network data. It can be used to group
 # all the transactions sent by a single shipper in the web interface.
 # If this options is not defined, the hostname is used.
-name: {{ inventory_hostname }}
+name: {{ inventory_hostname | mandatory }}
 
 # The tags of the shipper are included in their own field with each
 # transaction published. Tags make it easy to group servers by different
 # logical properties.
-#tags: ["service-X", "web-tier"]
+tags: {{ metricbeat_message_tags | list | to_json | default(['metricbeat']) }}
 
 # Optional fields that you can specify to add additional information to the
 # output. Fields can be scalar values, arrays, dictionaries, or any nested
 # combination of these.
-#fields:
-#  env: staging
+fields: 
+  {{ metricbeat_extra_fields | to_nice_yaml| default({}) }}
 
 # If this option is set to true, the custom fields are stored as top-level
 # fields in the output document instead of being grouped under a fields
@@ -65,7 +66,7 @@ name: {{ inventory_hostname }}
 # distribution (for example, the sample dashboards).
 # If not set by a CLI flag or in the configuration file, the default for the
 # home path is the location of the binary.
-path.home: {{ metricbeat_config_dir }}
+path.home: {{ metricbeat_config_dir | mandatory }}
 
 # The configuration path for the metricbeat installation. This is the default
 # base path for configuration files, including the main YAML configuration file
@@ -82,46 +83,7 @@ path.data: ${path.home}/data
 # The logs path for a metricbeat installation. This is the default location for
 # the Beat's log files. If not set by a CLI flag or in the configuration file,
 # the default for the logs path is a logs subdirectory inside the home path.
-path.logs: {{ metricbeat_log_dir }}
-
-#============================== Dashboards =====================================
-# These settings control loading the sample dashboards to the Kibana index. Loading
-# the dashboards is disabled by default and can be enabled either by setting the
-# options here, or by using the `-setup` CLI flag.
-#dashboards.enabled: false
-
-# The URL from where to download the dashboards archive. By default this URL
-# has a value which is computed based on the Beat name and version. For released
-# versions, this URL points to the dashboard archive on the artifacts.elastic.co
-# website.
-#dashboards.url:
-
-# The directory from where to read the dashboards. It is used instead of the URL
-# when it has a value.
-#dashboards.directory:
-
-# The file archive (zip file) from where to read the dashboards. It is used instead
-# of the URL when it has a value.
-#dashboards.file:
-
-# If this option is enabled, the snapshot URL is used instead of the default URL.
-#dashboards.snapshot: false
-
-# The URL from where to download the snapshot version of the dashboards. By default
-# this has a value which is computed based on the Beat name and version.
-#dashboards.snapshot_url
-
-# In case the archive contains the dashboards from multiple Beats, this lets you
-# select which one to load. You can load all the dashboards in the archive by
-# setting this to the empty string.
-#dashboards.beat: metricbeat
-
-# The name of the Kibana index to use for setting the configuration. Default is ".kibana"
-#dashboards.kibana_index: .kibana
-
-# The Elasticsearch index name. This overwrites the index name defined in the
-# dashboards and index pattern. Example: testbeat-*
-#dashboards.index:
+path.logs: {{ metricbeat_log_dir | mandatory }}
 
 #================================ Logging ======================================
 # There are three options for the log output: syslog, file, stderr.
@@ -155,7 +117,7 @@ logging.to_files: true
 logging.files:
   # Configure the path where the logs are written. The default is the logs directory
   # under the home path (the binary location).
-  path: {{ metricbeat_log_dir }}
+  path: {{ metricbeat_log_dir | mandatory }}
 
   # The name of the files where the logs are written to.
   name: metricbeat
@@ -219,13 +181,16 @@ output.logstash:
   enabled: true
 
   # The Logstash hosts
-  hosts: {{ logstash_url }}
+  hosts: ["{{ logstash_url | mandatory }}"]
 
   # Number of workers per Logstash host.
   #worker: 1
 
   # Set gzip compression level.
   compression_level: 3
+
+  # Configure escaping html symbols in strings.
+  escape_html: true
 
   # Optional load balance the events between the Logstash hosts
   #loadbalance: true
@@ -284,3 +249,10 @@ output.logstash:
   # Configure what types of renegotiation are supported. Valid options are
   # never, once, and freely. Default is never.
   #ssl.renegotiation: never
+
+  # The number of times to retry publishing an event after a publishing failure.
+  # After the specified number of retries, the events are typically dropped.
+  # Some Beats, such as Filebeat and Winlogbeat, ignore the max_retries setting
+  # and retry until all events are published.  Set max_retries to a value less
+  # than 0 to retry until all events are published. The default is 3.
+  max_retries: 3
