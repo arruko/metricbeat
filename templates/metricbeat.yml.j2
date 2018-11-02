@@ -41,7 +41,9 @@ tags: {{ metricbeat_message_tags | list | to_json | default(['metricbeat']) }}
 # output. Fields can be scalar values, arrays, dictionaries, or any nested
 # combination of these.
 fields: 
-  {{ metricbeat_extra_fields | to_nice_yaml| default({}) }}
+  index_pool: {{ logstash_output_index_pool | default('elk') }}
+  index_env: {{ logstash_output_index_env | default('local') }}
+  index_doc_type: {{ logstash_output_index_doc_type | default('all') }}
 
 # If this option is set to true, the custom fields are stored as top-level
 # fields in the output document instead of being grouped under a fields
