@@ -5,6 +5,12 @@
 - include_tasks: setup-RedHat.yml
   when: ansible_os_family == "RedHat"
 
+- name: config | Copy modules templates into default modules path
+  template:
+    src: "{{ item }}.module.yml.j2"
+    dest: "{{ metricbeat_modules_dir }}/{{ item }}.yml"
+  with_items: "{{ metricbeat_enabled_modules | default([]) }}"
+
 - name: config | Configuring Metricbeat
   template:
     src: metricbeat.yml.j2
@@ -15,3 +21,4 @@
   service:
     name: metricbeat
     enabled: true
+  register: metricbeat_is_running

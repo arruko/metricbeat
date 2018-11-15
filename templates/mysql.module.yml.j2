@@ -1,0 +1,19 @@
+- module: mysql
+  metricsets:
+    - "status"
+    - "galera_status"
+  period: 10s
+
+  # Host DSN should be defined as "user:pass@tcp(127.0.0.1:3306)/"
+  # The username and password can either be set in the DSN or using the username
+  # and password config options. Those specified in the DSN take precedence.
+  hosts: ["{{ metricbeat_mysql_username | mandatory }}:{{ metricbeat_mysql_password | mandatory }}@tcp({{ ansible_host }}:{{ metricbeat_mysql_port | mandatory }})/"]
+
+  # Username of hosts. Empty by default.
+  username: {{ metricbeat_mysql_username | mandatory }}
+
+  # Password of hosts. Empty by default.
+  password: {{ metricbeat_mysql_password | mandatory}}
+
+  # By setting raw to true, all raw fields from the status metricset will be added to the event.
+  #raw: false

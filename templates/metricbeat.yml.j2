@@ -14,16 +14,13 @@
 metricbeat.config.modules:
 
   # Glob pattern for configuration reloading
-  path: ${path.config}/conf.d/*.yml
+  path: ${path.config}/modules.d/*.yml
 
   # Period on which files under path should be checked for chagnes
   reload.period: 10s
 
   # Set to true to enable config reloading
   reload.enabled: false
-
-metricbeat.modules: 
-{{ metricbeat_enabled_modules | to_yaml | mandatory }}
 
 #================================ General ======================================
 
@@ -60,6 +57,11 @@ fields:
 # Sets the maximum number of CPUs that can be executing simultaneously. The
 # default is the number of logical CPUs available in the system.
 #max_procs:
+
+#================================= Dashboards ======================================
+setup.dashboards.enabled: true
+setup.kibana.host: "{{ kibana_url | mandatory }}"
+setup.kibana.protocol: "{{ kibana_url_protocol | default('https') }}"
 
 #================================= Paths ======================================
 
@@ -189,7 +191,7 @@ output.logstash:
   #worker: 1
 
   # Set gzip compression level.
-  compression_level: 3
+  compression_level: 5
 
   # Configure escaping html symbols in strings.
   escape_html: true
@@ -199,7 +201,7 @@ output.logstash:
 
   # Number of batches to be send asynchronously to logstash while processing
   # new batches.
-  #pipelining: 0
+  pipelining: 3
 
   # If enabled only a subset of events in a batch of events is transferred per
   # transaction.  The number of events to be sent increases up to `bulk_max_size`
