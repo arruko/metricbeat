@@ -4,8 +4,9 @@
     key: "{{ metricbeat_repo_key }}"
 
 - name: RedHat | Create Elasticsearch yum repo
-  yumrepo:
+  yum_repository:
     name: elasticsearch
+    description: "Metricbeat {{ metricbeat_major_version }}"
     baseurl: "{{ metricbeat_repo_url }}/packages/{{ metricbeat_major_version }}/yum"
     enabled: yes
     gpgcheck: yes
