@@ -153,10 +153,10 @@ logging.files:
 # contain CPU load percentages, but remove the fields that contain CPU ticks
 # values:
 #
-{% if metricbeat_fields_list is defined and ne(metricbeat_fields_list, []) %}
+{% if metricbeat_fields_list is defined and metricbeat_fields_list != [] %}
 processors:
 - include_fields:
-    fields: {{ metricbeat_fields_list }}
+    fields: {{ metricbeat_fields_list | to_json }}
 {% endif %}
 #
 # The following example drops the events that have the HTTP response code 200:
