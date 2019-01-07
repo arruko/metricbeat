@@ -14,6 +14,6 @@
 
 - name: RedHat | Install Metricbeat package
   yum:
-    name: "metricbeat-{{ metricbeat_minor_version }}"
+    name: "{{ metricbeat_package | default(metricbeat_package_default) }}"
     state: present
   notify: restart metricbeat

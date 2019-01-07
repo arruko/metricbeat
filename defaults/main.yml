@@ -1,6 +1,6 @@
 ---
 metricbeat_major_version: 6.x
-metricbeat_minor_version: 6.0.1
+metricbeat_package_default: metricbeat
 metricbeat_repo_url: https://artifacts.elastic.co
 metricbeat_repo_key: "{{ metricbeat_repo_url }}/GPG-KEY-elasticsearch"
 metricbeat_config_dir: /etc/metricbeat
